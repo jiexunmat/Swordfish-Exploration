@@ -1,13 +1,22 @@
-function [ responses ] = SimulationEngine( params,designVars )
+function [ responses ] = SimulationEngine( designVars )
 %SIMULATIONENGINE 
-% params = [L,X,Y,E]
+% params = [l,X,Y,E]    % length, load_x, load_y, Young's modulus
 % designVars = [w,t]    % width, thickness
-% responses = [A,R,D]   % Area, Stress, Displacement
+% responses = [S,R,D]   % Area, Stress, Displacement
 
+% Simulation parameters
+l = 100;
+X = 500;
+Y = 1000;
+E = 2.9E7;
 
-A = w*t;
+% Unpack designVars
+w = designVars(1);
+t = designVars(2);
+
+S = w*t;
 R = 600*Y/(w*t^2) + 600*X/(w^2*t);
-D = 4*L^3 / (E*w*t) * sqrt((Y/t^2)^2 + (X/w^2)^2);
+D = 4*l^3 / (E*w*t) * sqrt((Y/t^2)^2 + (X/w^2)^2);
 
 responses = [A,R,D];
 end
