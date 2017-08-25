@@ -3,8 +3,9 @@ lb = [1,1];     % [width,thickness]
 ub = [4,4];     % [width,thickness]
 
 % Sampling with lhs
-n_train = 400;
-n_test = 1000;
+SIMULATION_BUDGET = 500;
+n_train = SIMULATION_BUDGET*0.7;
+n_test = SIMULATION_BUDGET*0.3;
 x_train = lhs(lb,ub,n_train);
 x_test = lhs(lb,ub,n_test);
 
