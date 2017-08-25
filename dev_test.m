@@ -2,11 +2,12 @@
 lb = [1,1];     % [width,thickness]
 ub = [4,4];     % [width,thickness]
 
-% Sampling with lhs
+% Basic parameters
 SIMULATION_BUDGET = 500;
 n_train = SIMULATION_BUDGET*0.7;
 n_test = SIMULATION_BUDGET*0.3;
 
+%% Design of Experiments (Sampling scheme)
 x_train = lhs(lb,ub,n_train);
 x_test = lhs(lb,ub,n_test);
 
@@ -21,8 +22,9 @@ for i = 1:n_test
     y_test(i,:) = SimulationEngine(x_test(i,:));
 end
 
+%% Metamodelling
 metamodel_method = 'GP';
-% Time to build metamodel for each response
+% Build metamodel for each response
 y_pred = zeros(n_test, n_responses);
 switch metamodel_method
     case 'GP'
@@ -42,12 +44,18 @@ switch metamodel_method
         end
 end
 
-% Evaluate errors
+% Obtain validation errors
 errors = zeros(1, n_responses);
 for i = 1:n_responses
     errors(i) = compute_RMSE(y_pred(:,i),y_test(:,i));
 end
+fprintf('\n--------------------------------\n');
+fprintf('Number of simulation calls = %d\n', SIMULATION_BUDGET);
+ave_resp = sum(y_test,1)./size(y_test,1);
+disp('Percentage errors on each response:')
+disp(errors./ave_resp*100)
 
+%% Visualisation of response surface
 % Surf plot for objectives and constraints
 [X,Y] = meshgrid(1:0.05:4, 1:0.05:4);
 A = reshape(X,[numel(X),1]);
@@ -74,19 +82,20 @@ figure
 set(gcf, 'Units', 'normalized', 'Position', [0.05, 0.2, 0.9, 0.4])
 subplot(1,3,1)
 surf(X,Y,Wt)
+view([0,90])
 title('Weight')
 xlabel('width,w'); ylabel('thickness,t');
 
 subplot(1,3,2)
 surf(X,Y,S_clip); hold on;
+view([0,90])
 %surf(X,Y,S_lim)
 title('Stress')
 xlabel('width,w'); ylabel('thickness,t');
 
 subplot(1,3,3)
 surf(X,Y,D_clip); hold on;
+view([0,90])
 %surf(X,Y,D_lim)
 title('Displacement')
 xlabel('width,w'); ylabel('thickness,t');
-
-
