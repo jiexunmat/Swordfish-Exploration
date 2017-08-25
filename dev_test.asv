@@ -7,7 +7,10 @@ SIMULATION_BUDGET = 500;
 n_train = SIMULATION_BUDGET*0.7;
 n_test = SIMULATION_BUDGET*0.3;
 
+<<<<<<< HEAD
+=======
 %% Design of Experiments (Sampling scheme)
+>>>>>>> 6be27c2779ad1962c9402ae06c22fa1872789892
 x_train = lhs(lb,ub,n_train);
 x_test = lhs(lb,ub,n_test);
 
@@ -22,9 +25,19 @@ for i = 1:n_test
     y_test(i,:) = SimulationEngine(x_test(i,:));
 end
 
-%% Metamodelling
+<<<<<<< HEAD
 metamodel_method = 'GP';
+% Time to build metamodel for each response
+
+%% Metamodelling
 % Build metamodel for each response
+gpoptions.covfunc = {'covSum', {'covSEard','covNoise'}};
+for i = 1:n_responses
+    gpdata(i) = gaussianprocessregression('Train',x_train,y_train(:,i),gpoptions);
+end
+
+% Obtain validation errors
+>>>>>>> 6be27c2779ad1962c9402ae06c22fa1872789892
 y_pred = zeros(n_test, n_responses);
 switch metamodel_method
     case 'GP'
@@ -44,7 +57,6 @@ switch metamodel_method
         end
 end
 
-% Obtain validation errors
 errors = zeros(1, n_responses);
 for i = 1:n_responses
     errors(i) = compute_RMSE(y_pred(:,i),y_test(:,i));
